@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Home, Menu, X, LogOut, User } from 'lucide-react';
-import { getCurrentUser, logOut } from '../../services/authService';
+import { Home, Menu, X } from 'lucide-react';
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [user, setUser] = useState(null);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,50 +14,6 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  useEffect(() => {
-    // Check for logged in user
-    const currentUser = getCurrentUser();
-    setUser(currentUser);
-    
-    // Listen for storage changes (login/logout in other tabs)
-    const handleStorageChange = () => {
-      const updatedUser = getCurrentUser();
-      setUser(updatedUser);
-    };
-    
-    // Listen for custom login event
-    const handleLoginEvent = () => {
-      const updatedUser = getCurrentUser();
-      setUser(updatedUser);
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('userLoggedIn', handleLoginEvent);
-    window.addEventListener('userLoggedOut', handleLoginEvent);
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('userLoggedIn', handleLoginEvent);
-      window.removeEventListener('userLoggedOut', handleLoginEvent);
-    };
-  }, []);
-
-  const getInitials = (name) => {
-    if (!name) return 'U';
-    const names = name.trim().split(' ');
-    if (names.length >= 2) {
-      return (names[0][0] + names[names.length - 1][0]).toUpperCase();
-    }
-    return name.substring(0, 2).toUpperCase();
-  };
-
-  const handleLogout = async () => {
-    await logOut();
-    setUser(null);
-    setShowProfileMenu(false);
-    navigate('/');
-  };
 
   return (
     <>
@@ -83,65 +36,6 @@ const Navbar = () => {
             -webkit-text-fill-color: transparent;
             background-clip: text;
           }
-          
-          .profile-avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-          }
-          
-          .profile-avatar:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-          }
-          
-          .profile-dropdown {
-            position: absolute;
-            top: calc(100% + 12px);
-            right: 0;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            min-width: 200px;
-            padding: 8px;
-            z-index: 1000;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-          }
-          
-          .profile-menu-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 10px;
-            transition: all 0.2s;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            color: #374151;
-          }
-          
-          .profile-menu-item:hover {
-            background: #f3f4f6;
-          }
-          
-          .profile-menu-item.logout {
-            color: #dc2626;
-          }
-          
-          .profile-menu-item.logout:hover {
-            background: #fee2e2;
-          }
         `}
       </style>
       
@@ -153,7 +47,10 @@ const Navbar = () => {
         >
           <div className="flex justify-between items-center">
             {/* Logo */}
-            <div className="flex items-center space-x-3 group cursor-pointer">
+            <div 
+              onClick={() => navigate('/')}
+              className="flex items-center space-x-3 group cursor-pointer"
+            >
               <div className="logo-gradient w-9 h-9 rounded-xl flex items-center justify-center transform transition-all duration-500 group-hover:rotate-[360deg] group-hover:scale-110">
                 <Home className="w-5 h-5 text-white transition-transform duration-500 group-hover:scale-110" />
               </div>
@@ -164,83 +61,37 @@ const Navbar = () => {
             
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-10">
-              <a 
-                href="#categories" 
+              <button 
+                onClick={() => navigate('/categories')}
                 className="text-gray-600 hover:text-gray-900 transition-all duration-300 text-sm font-semibold relative group"
               >
                 Categories
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-gray-600 to-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              <a 
-                href="#services" 
-                className="text-gray-600 hover:text-gray-900 transition-all duration-300 text-sm font-semibold relative group"
-              >
-                Services
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-gray-600 to-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              <a 
-                href="#how" 
+              </button>
+              <button 
+                onClick={() => navigate('/how-it-works')}
                 className="text-gray-600 hover:text-gray-900 transition-all duration-300 text-sm font-semibold relative group"
               >
                 How it works
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-gray-600 to-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              <a 
-                href="#contact" 
+              </button>
+              <button 
+                onClick={() => navigate('/contact')}
                 className="text-gray-600 hover:text-gray-900 transition-all duration-300 text-sm font-semibold relative group"
               >
                 Contact
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-gray-600 to-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              </a>
+              </button>
             </div>
 
-            {/* CTA Button / Profile - Desktop */}
-            <div className="hidden md:block relative">
-              {user ? (
-                <div className="relative">
-                  <div 
-                    className="profile-avatar"
-                    onClick={() => setShowProfileMenu(!showProfileMenu)}
-                  >
-                    {getInitials(user.name)}
-                  </div>
-                  
-                  {showProfileMenu && (
-                    <>
-                      <div 
-                        className="fixed inset-0 z-40"
-                        onClick={() => setShowProfileMenu(false)}
-                      />
-                      <div className="profile-dropdown">
-                        <div className="px-4 py-3 border-b border-gray-100">
-                          <p className="text-sm font-semibold text-gray-900">{user.name}</p>
-                          <p className="text-xs text-gray-500 mt-1">{user.email}</p>
-                        </div>
-                        <div className="py-2">
-                          <div className="profile-menu-item">
-                            <User className="w-4 h-4" />
-                            <span>Profile</span>
-                          </div>
-                          <div 
-                            className="profile-menu-item logout"
-                            onClick={handleLogout}
-                          >
-                            <LogOut className="w-4 h-4" />
-                            <span>Logout</span>
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              ) : (
-                <Link
-                  to="/auth"
-                  className="bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white px-8 py-3.5 rounded-full font-semibold transition-all duration-300 text-sm hover:shadow-xl hover:scale-105 active:scale-95 transform inline-block"
-                >
-                  Sign Up
-                </Link>
-              )}
+            {/* CTA Button - Desktop */}
+            <div className="hidden md:block">
+              <Link
+                to="/auth"
+                className="bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white px-8 py-3.5 rounded-full font-semibold transition-all duration-300 text-sm hover:shadow-xl hover:scale-105 active:scale-95 transform inline-block"
+              >
+                Sign Up
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}
@@ -263,55 +114,39 @@ const Navbar = () => {
           }`}
         >
           <div className="space-y-4">
-            <a 
-              href="#categories" 
+            <button 
+              onClick={() => {
+                navigate('/categories');
+                setMobileMenuOpen(false);
+              }}
               className="block text-gray-600 hover:text-gray-900 text-sm font-semibold transition-all duration-300 hover:translate-x-2 hover:scale-105"
             >
               Categories
-            </a>
-            <a 
-              href="#services" 
-              className="block text-gray-600 hover:text-gray-900 text-sm font-semibold transition-all duration-300 hover:translate-x-2 hover:scale-105"
-            >
-              Services
-            </a>
-            <a 
-              href="#how" 
+            </button>
+            <button 
+              onClick={() => {
+                navigate('/how-it-works');
+                setMobileMenuOpen(false);
+              }}
               className="block text-gray-600 hover:text-gray-900 text-sm font-semibold transition-all duration-300 hover:translate-x-2 hover:scale-105"
             >
               How it works
-            </a>
-            <a 
-              href="#contact" 
+            </button>
+            <button 
+              onClick={() => {
+                navigate('/contact');
+                setMobileMenuOpen(false);
+              }}
               className="block text-gray-600 hover:text-gray-900 text-sm font-semibold transition-all duration-300 hover:translate-x-2 hover:scale-105"
             >
               Contact
-            </a>
-            
-            {user ? (
-              <>
-                <div className="border-t border-gray-200 pt-4 mt-4">
-                  <div className="px-2 py-3">
-                    <p className="text-sm font-semibold text-gray-900">{user.name}</p>
-                    <p className="text-xs text-gray-500 mt-1">{user.email}</p>
-                  </div>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full bg-red-50 hover:bg-red-100 text-red-600 px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95 transform mt-2 flex items-center justify-center gap-2"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Logout
-                  </button>
-                </div>
-              </>
-            ) : (
-              <Link
-                to="/auth"
-                className="w-full bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white px-8 py-3.5 rounded-full font-semibold text-sm transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95 transform mt-2 inline-block text-center"
-              >
-                Sign Up
-              </Link>
-            )}
+            </button>
+            <Link
+              to="/auth"
+              className="w-full bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white px-8 py-3.5 rounded-full font-semibold text-sm transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95 transform mt-2 inline-block text-center"
+            >
+              Sign Up
+            </Link>
           </div>
         </div>
       </div>

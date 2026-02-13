@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { TextPlugin } from 'gsap/TextPlugin';
 import { DecayCard } from '../';
@@ -10,6 +11,7 @@ import behaviourImage from '../../assets/behaviour.jpeg';
 gsap.registerPlugin(TextPlugin);
 
 const Hero = () => {
+  const navigate = useNavigate();
   const headingRef = useRef(null);
   const subHeadingRef = useRef(null);
   const paragraphRef = useRef(null);
@@ -82,18 +84,18 @@ const Hero = () => {
       </p>
 
       <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-        <a
-          href="#services"
+        <button
+          onClick={() => navigate('/categories')}
           className="bg-green-300 hover:bg-green-400 text-gray-800 px-8 py-3.5 rounded-full font-medium transition-colors"
         >
           Service Categories
-        </a>
-        <a
-          href="#contact"
+        </button>
+        <button
+          onClick={() => navigate('/contact')}
           className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-8 py-3.5 rounded-full font-medium transition-colors"
         >
           Instant Booking
-        </a>
+        </button>
       </div>
 
       <div
