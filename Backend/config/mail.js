@@ -8,19 +8,18 @@ const createTransporter = () => {
   const emailPass = process.env.EMAIL_PASS?.trim();
 
   if (!emailUser || !emailPass) {
+    console.log("📧 Email disabled: EMAIL_USER or EMAIL_PASS missing in .env");
     return null;
   }
 
+  // Use port 465 with secure: true for better Gmail compatibility
   return nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
+    port: 465,
+    secure: true, // true for port 465, false for port 587
     auth: {
       user: emailUser,
       pass: emailPass,
-    },
-    tls: {
-      rejectUnauthorized: false,
     },
   });
 };

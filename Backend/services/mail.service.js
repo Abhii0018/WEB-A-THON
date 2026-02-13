@@ -10,17 +10,39 @@ export const sendMail = async ({ to, subject, html }) => {
       throw new Error("Email service not configured. Please set EMAIL_USER and EMAIL_PASS in .env");
     }
 
+    const fromAddress = process.env.EMAIL_USER?.trim();
+
     const info = await transporter.sendMail({
-      from: `"Instant Service Booking" <${process.env.EMAIL_USER}>`,
+      from: `"Instant Service Booking" <${fromAddress}>`,
       to,
       subject,
       html,
     });
 
-    console.log("✅ Email sent:", info.messageId);
+    console.log("✅ Email sent successfully:", info.messageId);
+    console.log("   To:", to);
+    console.log("   Subject:", subject);
     return info;
   } catch (error) {
-    console.error("❌ Email failed:", error.message);
+    // Log detailed error information
+    console.error("❌ Email sending failed:");
+    console.error("   Message:", error.message);
+    console.error("   Code:", error.code);
+    if (error.response) {
+      console.error("   Response:", error.response);
+    }
+    if (error.responseCode) {
+      console.error("   Response Code:", error.responseCode);
+    }
+    if (error.command) {
+      console.error("   Command:", error.command);
+    }
+    
+    // Throw error with more details in development
+    if (process.env.NODE_ENV === "development") {
+      throw new Error(`Email could not be sent: ${error.message}`);
+    }
+    
     throw new Error("Email could not be sent");
   }
 };
