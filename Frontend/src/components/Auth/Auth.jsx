@@ -1,87 +1,105 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  signUpWithEmail,
-  signInWithEmail,
-  signInWithGoogle as googleSignIn
-} from '../../services/authService';
+import { signUpWithEmail, signInWithEmail, signInWithGoogle } from '../../services/authService';
 import './Auth.css';
 
 const Auth = () => {
   const [activeTab, setActiveTab] = useState('signup');
   const [showPassword, setShowPassword] = useState(false);
   const [showSignupPassword, setShowSignupPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const switchTab = (tab) => {
     setActiveTab(tab);
     setError('');
+    setSuccessMessage('');
   };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
-
-    const formData = new FormData(e.target);
-    const firstName = formData.get('firstName');
-    const lastName = formData.get('lastName');
-    const email = formData.get('email');
-    const password = formData.get('password');
-
-    const result = await signUpWithEmail(
-      email,
-      password,
-      `${firstName} ${lastName}`
-    );
-
-    if (result.success) {
-      window.alert('Account created successfully!');
-    } else {
-      setError(result.error);
-      window.alert(`Error: ${result.error}`);
+    setSuccessMessage('');
+    setLoading(true);
+    
+    try {
+      const formData = new FormData(e.target);
+      const firstName = formData.get('firstName');
+      const lastName = formData.get('lastName');
+      const email = formData.get('email');
+      const password = formData.get('password');
+      
+      const result = await signUpWithEmail(
+        email, 
+        password, 
+        `${firstName} ${lastName}`
+      );
+      
+      if (result.success) {
+        console.log('Signup successful:', result.user);
+        // Clear the form
+        e.target.reset();
+        // Switch to signin tab with success message
+        setSuccessMessage(result.message || 'Account created! Please login to continue.');
+        setActiveTab('signin');
+      } else {
+        setError(result.error);
+      }
+    } catch (err) {
+      setError('An unexpected error occurred');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
-
-    const formData = new FormData(e.target);
-    const email = formData.get('email');
-    const password = formData.get('password');
-
-    const result = await signInWithEmail(email, password);
-
-    if (result.success) {
-      window.alert('Signed in successfully!');
-    } else {
-      setError(result.error);
-      window.alert(`Error: ${result.error}`);
+    setLoading(true);
+    
+    try {
+      const formData = new FormData(e.target);
+      const email = formData.get('email');
+      const password = formData.get('password');
+      
+      const result = await signInWithEmail(email, password);
+      
+      if (result.success) {
+        console.log('Login successful:', result.user);
+        navigate('/'); // Redirect to home page
+      } else {
+        setError(result.error);
+      }
+    } catch (err) {
+      setError('An unexpected error occurred');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const handleGoogleSignIn = async () => {
-    setLoading(true);
     setError('');
-
-    const result = await googleSignIn();
-
-    if (result.success) {
-      window.alert('Signed in with Google successfully!');
-    } else {
-      setError(result.error);
-      window.alert(`Error: ${result.error}`);
+    setLoading(true);
+    
+    try {
+      const result = await signInWithGoogle();
+      
+      if (result.success) {
+        console.log('Google login successful:', result.user);
+        navigate('/'); // Redirect to home page
+      } else {
+        setError(result.error);
+      }
+    } catch (err) {
+      setError('An unexpected error occurred');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const closeModal = () => {
@@ -112,41 +130,33 @@ const Auth = () => {
 
         <div className={`auth-form ${activeTab === 'signup' ? 'active' : ''}`}>
           <h1 className="auth-title">Create an account</h1>
-          {error && <p className="auth-terms">{error}</p>}
+          {error && <p className="auth-error">{error}</p>}
 
           <form onSubmit={handleSignUp}>
             <div className="auth-input-row">
               <div className="auth-input-group">
-                <div className="auth-input">
-                  <input type="text" name="firstName" placeholder="John" required />
-                </div>
+                <input type="text" name="firstName" placeholder="First name" required className="auth-input" />
               </div>
               <div className="auth-input-group">
-                <div className="auth-input">
-                  <input type="text" name="lastName" placeholder="Last name" required />
-                </div>
+                <input type="text" name="lastName" placeholder="Last name" required className="auth-input" />
               </div>
             </div>
 
-            <div className="auth-input" style={{ marginBottom: '16px' }}>
-              <div className="auth-input inline">
-                <span>✉</span>
-                <input type="email" name="email" placeholder="Enter your email" required />
-              </div>
+            <div className="auth-input inline" style={{ marginBottom: '16px' }}>
+              <span>✉</span>
+              <input type="email" name="email" placeholder="Enter your email" required />
             </div>
 
-            <div className="auth-input">
-              <div className="auth-input inline">
-                <input
-                  type={showSignupPassword ? 'text' : 'password'}
-                  name="password"
-                  placeholder="Password"
-                  required
-                />
-                <span className="auth-eye" onClick={() => setShowSignupPassword(!showSignupPassword)}>
-                  👁️
-                </span>
-              </div>
+            <div className="auth-input inline">
+              <input
+                type={showSignupPassword ? 'text' : 'password'}
+                name="password"
+                placeholder="Password"
+                required
+              />
+              <span className="auth-eye" onClick={() => setShowSignupPassword(!showSignupPassword)}>
+                👁️
+              </span>
             </div>
 
             <button type="submit" className="auth-primary" disabled={loading}>
@@ -175,7 +185,7 @@ const Auth = () => {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            Sign in with Google
+            {loading ? 'Signing in...' : 'Sign in with Google'}
           </button>
 
           <div className="auth-terms">
@@ -185,28 +195,25 @@ const Auth = () => {
 
         <div className={`auth-form ${activeTab === 'signin' ? 'active' : ''}`}>
           <h1 className="auth-title">Welcome back</h1>
-          {error && <p className="auth-terms">{error}</p>}
+          {successMessage && <p className="auth-success">{successMessage}</p>}
+          {error && <p className="auth-error">{error}</p>}
 
           <form onSubmit={handleSignIn}>
-            <div className="auth-input" style={{ marginBottom: '16px' }}>
-              <div className="auth-input inline">
-                <span>✉</span>
-                <input type="email" name="email" placeholder="Enter your email" required />
-              </div>
+            <div className="auth-input inline" style={{ marginBottom: '16px' }}>
+              <span>✉</span>
+              <input type="email" name="email" placeholder="Enter your email" required />
             </div>
 
-            <div className="auth-input">
-              <div className="auth-input inline">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  placeholder="Password"
-                  required
-                />
-                <span className="auth-eye" onClick={() => setShowPassword(!showPassword)}>
-                  👁️
-                </span>
-              </div>
+            <div className="auth-input inline">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                placeholder="Password"
+                required
+              />
+              <span className="auth-eye" onClick={() => setShowPassword(!showPassword)}>
+                👁️
+              </span>
             </div>
 
             <div className="auth-forgot">
@@ -239,7 +246,7 @@ const Auth = () => {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            Sign in with Google
+            {loading ? 'Signing in...' : 'Sign in with Google'}
           </button>
 
           <div className="auth-terms">

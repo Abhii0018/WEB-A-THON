@@ -22,7 +22,6 @@ A production-ready RESTful API for an Instant Service Booking System with role-b
 - **Database**: MongoDB + Mongoose
 - **Authentication**: JWT + HTTP-only Cookies
 - **Password Hashing**: bcrypt
-- **Email**: Nodemailer
 - **Module System**: ES Modules (import/export)
 
 ## ✨ Features
