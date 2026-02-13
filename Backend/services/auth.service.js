@@ -3,8 +3,6 @@ import User from "../models/model.user.js";
 import OTP from "../models/model.otp.js";
 import { generateOTP } from "../utils/generateOtp.js";
 import jwt from "jsonwebtoken";
-import { sendMail } from "../services/mail.service.js";
-import { otpTemplate } from "../utils/emailTemplates.js";
 /**
  * Initiate signup by generating OTP
  */
@@ -28,15 +26,12 @@ export const initiateSignupService = async (email) => {
     expiresAt: new Date(Date.now() + 5 * 60 * 1000)
   });
 
-  // 5. Send OTP via email
-  await sendMail({
-    to: email,
-    subject: "Verify Your Account - OTP Code",
-    html: otpTemplate(otp)
-  });
+  // 5. Email functionality removed - OTP stored in database
+  // For development: OTP is available in the database
+  console.log(`OTP for ${email}: ${otp}`);
 
   return {
-    message: "OTP sent to your email",
+    message: "OTP generated successfully. Check console for OTP (development mode)",
     expiresIn: "5 minutes"
   };
 };

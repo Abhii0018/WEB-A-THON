@@ -25,9 +25,27 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
+      required: function() {
+        // Password is only required if firebaseUid is not present
+        return !this.firebaseUid;
+      },
       minlength: [6, "Password must be at least 6 characters long"],
       select: false // Hide password by default in queries
+    },
+    firebaseUid: {
+      type: String,
+      unique: true,
+      sparse: true, // Allow null values, only enforce uniqueness when present
+      index: true
+    },
+    photoURL: {
+      type: String,
+      default: null
+    },
+    authProvider: {
+      type: String,
+      enum: ["email", "google", "firebase"],
+      default: "email"
     },
     role: {
       type: String,

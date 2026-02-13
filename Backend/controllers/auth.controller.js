@@ -1,7 +1,5 @@
 import User from "../models/model.user.js";
 import OTP from "../models/model.otp.js";
-import { sendMail } from "../services/mail.service.js";
-import { resetPasswordTemplate, otpTemplate } from "../utils/emailTemplates.js";
 import { generateOTP } from "../utils/generateOtp.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
@@ -45,27 +43,14 @@ export const initiateSignup = async (req, res) => {
       expiresAt: new Date(Date.now() + 5 * 60 * 1000) // 5 minutes
     });
 
-    // Send OTP via email
-    try {
-      await sendMail({
-        to: email,
-        subject: "Verify Your Account - OTP Code",
-        html: otpTemplate(otp)
-      });
+    // Email functionality removed - OTP is logged for development
+    console.log(`OTP for ${email}: ${otp}`);
 
-      res.status(200).json({
-        success: true,
-        message: "OTP sent to your email",
-        expiresIn: "5 minutes"
-      });
-    } catch (emailError) {
-      // If email fails, delete the OTP
-      await OTP.deleteOne({ email });
-      return res.status(500).json({
-        success: false,
-        message: "Failed to send OTP email. Please try again."
-      });
-    }
+    res.status(200).json({
+      success: true,
+      message: "OTP generated successfully. Check server console for OTP (development mode)",
+      expiresIn: "5 minutes"
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -280,29 +265,14 @@ export const forgotPassword = async (req, res) => {
     // Create reset URL
     const resetUrl = `${process.env.FRONTEND_URL || "http://localhost:3000"}/reset-password/${resetToken}`;
 
-    try {
-      // Send email
-      await sendMail({
-        to: user.email,
-        subject: "Password Reset Request",
-        html: resetPasswordTemplate(resetUrl, user.name)
-      });
+    // Email functionality removed - reset token logged for development
+    console.log(`Password reset URL for ${user.email}: ${resetUrl}`);
 
-      res.status(200).json({
-        success: true,
-        message: "Password reset email sent successfully"
-      });
-    } catch (emailError) {
-      // If email fails, clear reset token
-      user.resetPasswordToken = undefined;
-      user.resetPasswordExpire = undefined;
-      await user.save({ validateBeforeSave: false });
-
-      return res.status(500).json({
-        success: false,
-        message: "Email could not be sent. Please try again later."
-      });
-    }
+    res.status(200).json({
+      success: true,
+      message: "Password reset link generated. Check server console for reset URL (development mode)",
+      resetUrl: resetUrl // Including in response for development
+    });
   } catch (error) {
     res.status(500).json({
       success: false,

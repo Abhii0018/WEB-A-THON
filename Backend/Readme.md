@@ -20,7 +20,6 @@ A production-ready Node.js/Express backend for an instant service booking platfo
 - **MongoDB** + **Mongoose**
 - **JWT** + **cookie-parser**
 - **bcryptjs** for password hashing
-- **Nodemailer** for emails
 - **Morgan** for logging
 
 ## 📦 Installation
