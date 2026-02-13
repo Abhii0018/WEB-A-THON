@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Home, Menu, X } from 'lucide-react';
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -46,7 +47,10 @@ const Navbar = () => {
         >
           <div className="flex justify-between items-center">
             {/* Logo */}
-            <div className="flex items-center space-x-3 group cursor-pointer">
+            <div 
+              onClick={() => navigate('/')}
+              className="flex items-center space-x-3 group cursor-pointer"
+            >
               <div className="logo-gradient w-9 h-9 rounded-xl flex items-center justify-center transform transition-all duration-500 group-hover:rotate-[360deg] group-hover:scale-110">
                 <Home className="w-5 h-5 text-white transition-transform duration-500 group-hover:scale-110" />
               </div>
@@ -57,34 +61,27 @@ const Navbar = () => {
             
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-10">
-              <a 
-                href="#categories" 
+              <button 
+                onClick={() => navigate('/categories')}
                 className="text-gray-600 hover:text-gray-900 transition-all duration-300 text-sm font-semibold relative group"
               >
                 Categories
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-gray-600 to-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              <a 
-                href="#services" 
-                className="text-gray-600 hover:text-gray-900 transition-all duration-300 text-sm font-semibold relative group"
-              >
-                Services
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-gray-600 to-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              <a 
-                href="#how" 
+              </button>
+              <button 
+                onClick={() => navigate('/how-it-works')}
                 className="text-gray-600 hover:text-gray-900 transition-all duration-300 text-sm font-semibold relative group"
               >
                 How it works
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-gray-600 to-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              <a 
-                href="#contact" 
+              </button>
+              <button 
+                onClick={() => navigate('/contact')}
                 className="text-gray-600 hover:text-gray-900 transition-all duration-300 text-sm font-semibold relative group"
               >
                 Contact
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-gray-600 to-gray-900 transition-all duration-300 group-hover:w-full"></span>
-              </a>
+              </button>
             </div>
 
             {/* CTA Button - Desktop */}
@@ -117,30 +114,33 @@ const Navbar = () => {
           }`}
         >
           <div className="space-y-4">
-            <a 
-              href="#categories" 
+            <button 
+              onClick={() => {
+                navigate('/categories');
+                setMobileMenuOpen(false);
+              }}
               className="block text-gray-600 hover:text-gray-900 text-sm font-semibold transition-all duration-300 hover:translate-x-2 hover:scale-105"
             >
               Categories
-            </a>
-            <a 
-              href="#services" 
-              className="block text-gray-600 hover:text-gray-900 text-sm font-semibold transition-all duration-300 hover:translate-x-2 hover:scale-105"
-            >
-              Services
-            </a>
-            <a 
-              href="#how" 
+            </button>
+            <button 
+              onClick={() => {
+                navigate('/how-it-works');
+                setMobileMenuOpen(false);
+              }}
               className="block text-gray-600 hover:text-gray-900 text-sm font-semibold transition-all duration-300 hover:translate-x-2 hover:scale-105"
             >
               How it works
-            </a>
-            <a 
-              href="#contact" 
+            </button>
+            <button 
+              onClick={() => {
+                navigate('/contact');
+                setMobileMenuOpen(false);
+              }}
               className="block text-gray-600 hover:text-gray-900 text-sm font-semibold transition-all duration-300 hover:translate-x-2 hover:scale-105"
             >
               Contact
-            </a>
+            </button>
             <Link
               to="/auth"
               className="w-full bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white px-8 py-3.5 rounded-full font-semibold text-sm transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95 transform mt-2 inline-block text-center"

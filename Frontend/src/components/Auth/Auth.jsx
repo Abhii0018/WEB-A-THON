@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   signUpWithEmail,
   signInWithEmail,
@@ -14,6 +14,11 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get redirect URL from query params
+  const params = new URLSearchParams(location.search);
+  const redirectUrl = params.get('redirect') || '/home';
 
   const switchTab = (tab) => {
     setActiveTab(tab);
@@ -39,6 +44,7 @@ const Auth = () => {
 
     if (result.success) {
       window.alert('Account created successfully!');
+      navigate(redirectUrl);
     } else {
       setError(result.error);
       window.alert(`Error: ${result.error}`);
@@ -60,6 +66,7 @@ const Auth = () => {
 
     if (result.success) {
       window.alert('Signed in successfully!');
+      navigate(redirectUrl);
     } else {
       setError(result.error);
       window.alert(`Error: ${result.error}`);
@@ -76,6 +83,7 @@ const Auth = () => {
 
     if (result.success) {
       window.alert('Signed in with Google successfully!');
+      navigate(redirectUrl);
     } else {
       setError(result.error);
       window.alert(`Error: ${result.error}`);
