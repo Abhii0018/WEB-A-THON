@@ -13,22 +13,25 @@ const Auth = () => {
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
 
   // Get redirect URL from query params
   const params = new URLSearchParams(location.search);
-  const redirectUrl = params.get('redirect') || '/home';
+  const redirectUrl = params.get('redirect') || '/';
 
   const switchTab = (tab) => {
     setActiveTab(tab);
     setError('');
+    setSuccessMessage('');
   };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccessMessage('');
 
     const formData = new FormData(e.target);
     const firstName = formData.get('firstName');
@@ -43,11 +46,13 @@ const Auth = () => {
     );
 
     if (result.success) {
-      window.alert('Account created successfully!');
-      navigate(redirectUrl);
+      // Clear the form
+      e.target.reset();
+      // Switch to signin tab with success message
+      setSuccessMessage(result.message || 'Account created! Please login to continue.');
+      setActiveTab('signin');
     } else {
       setError(result.error);
-      window.alert(`Error: ${result.error}`);
     }
 
     setLoading(false);
@@ -57,6 +62,7 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccessMessage('');
 
     const formData = new FormData(e.target);
     const email = formData.get('email');
@@ -65,11 +71,9 @@ const Auth = () => {
     const result = await signInWithEmail(email, password);
 
     if (result.success) {
-      window.alert('Signed in successfully!');
       navigate(redirectUrl);
     } else {
       setError(result.error);
-      window.alert(`Error: ${result.error}`);
     }
 
     setLoading(false);
@@ -78,15 +82,14 @@ const Auth = () => {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     setError('');
+    setSuccessMessage('');
 
     const result = await googleSignIn();
 
     if (result.success) {
-      window.alert('Signed in with Google successfully!');
       navigate(redirectUrl);
     } else {
       setError(result.error);
-      window.alert(`Error: ${result.error}`);
     }
 
     setLoading(false);
@@ -120,7 +123,7 @@ const Auth = () => {
 
         <div className={`auth-form ${activeTab === 'signup' ? 'active' : ''}`}>
           <h1 className="auth-title">Create an account</h1>
-          {error && <p className="auth-terms">{error}</p>}
+          {error && <p className="auth-error">{error}</p>}
 
           <form onSubmit={handleSignUp}>
             <div className="auth-input-row">
@@ -193,7 +196,8 @@ const Auth = () => {
 
         <div className={`auth-form ${activeTab === 'signin' ? 'active' : ''}`}>
           <h1 className="auth-title">Welcome back</h1>
-          {error && <p className="auth-terms">{error}</p>}
+          {successMessage && <p className="auth-success">{successMessage}</p>}
+          {error && <p className="auth-error">{error}</p>}
 
           <form onSubmit={handleSignIn}>
             <div className="auth-input" style={{ marginBottom: '16px' }}>

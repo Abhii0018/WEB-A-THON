@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Home, Menu, X, LogOut, User } from 'lucide-react';
 import { getCurrentUser, logOut } from '../../services/authService';
 
@@ -9,6 +9,7 @@ const Navbar = () => {
   const [user, setUser] = useState(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,20 +19,25 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Check for user on mount and location change
   useEffect(() => {
-    // Check for logged in user
     const currentUser = getCurrentUser();
+    console.log('Navigation - Current user:', currentUser);
     setUser(currentUser);
-    
+  }, [location]);
+
+  useEffect(() => {
     // Listen for storage changes (login/logout in other tabs)
     const handleStorageChange = () => {
       const updatedUser = getCurrentUser();
+      console.log('Navigation - Storage changed, user:', updatedUser);
       setUser(updatedUser);
     };
     
     // Listen for custom login event
     const handleLoginEvent = () => {
       const updatedUser = getCurrentUser();
+      console.log('Navigation - Login event, user:', updatedUser);
       setUser(updatedUser);
     };
     
