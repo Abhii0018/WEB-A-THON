@@ -27,8 +27,8 @@ const BookingPage = () => {
     window.scrollTo(0, 0);
     
     // Check if user is logged in
-    const userToken = localStorage.getItem('userToken');
-    if (!userToken) {
+    const firebaseToken = localStorage.getItem('firebaseToken');
+    if (!firebaseToken) {
       // Redirect to auth page with booking intent
       navigate(`/auth?redirect=/booking/${categoryId}/${serviceId}`);
       return;
@@ -78,7 +78,7 @@ const BookingPage = () => {
       });
 
       alert('Booking confirmed! We will contact you shortly.');
-      navigate('/home');
+      // Stay on current page - don't redirect
     } catch (error) {
       alert('Error submitting booking. Please try again.');
     } finally {

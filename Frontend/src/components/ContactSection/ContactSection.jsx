@@ -1,9 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
+import api from '../../config/api';
 
 const ContactSection = () => {
-  const handleSubmit = (event) => {
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ type: '', text: '' });
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    window.alert('Thanks! We will reach out shortly.');
+    setLoading(true);
+    setMessage({ type: '', text: '' });
+
+    const formData = new FormData(event.target);
+    const data = {
+      firstName: formData.get('firstName'),
+      lastName: formData.get('lastName'),
+      email: formData.get('email'),
+      phone: formData.get('phone'),
+      topic: formData.get('topic'),
+      message: formData.get('message')
+    };
+
+    try {
+      const response = await api.post('/contacts', data);
+      
+      if (response.data.success) {
+        setMessage({ 
+          type: 'success', 
+          text: response.data.message || 'Thanks! We will reach out shortly.'
+        });
+        event.target.reset();
+      }
+    } catch (error) {
+      setMessage({ 
+        type: 'error', 
+        text: error.response?.data?.message || 'Failed to send message. Please try again.'
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -53,6 +87,16 @@ const ContactSection = () => {
             onSubmit={handleSubmit}
             className="rounded-2xl border border-gray-200/40 bg-white/70 backdrop-blur-sm p-6 shadow-sm"
           >
+            {message.text && (
+              <div className={`mb-4 p-4 rounded-lg ${
+                message.type === 'success' 
+                  ? 'bg-green-50 text-green-800 border border-green-200' 
+                  : 'bg-red-50 text-red-800 border border-red-200'
+              }`}>
+                {message.text}
+              </div>
+            )}
+
             <div className="grid gap-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <label className="text-sm font-medium text-gray-700">
@@ -134,9 +178,10 @@ const ContactSection = () => {
 
               <button
                 type="submit"
-                className="bg-green-300 hover:bg-green-400 text-gray-800 px-6 py-3 rounded-full font-medium transition-colors"
+                disabled={loading}
+                className="bg-green-300 hover:bg-green-400 text-gray-800 px-6 py-3 rounded-full font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Send message
+                {loading ? 'Sending...' : 'Send message'}
               </button>
             </div>
           </form>

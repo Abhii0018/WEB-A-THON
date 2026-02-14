@@ -51,3 +51,6 @@ export const authMiddleware = async (req, res, next) => {
     });
   }
 };
+
+// Export as 'protect' for compatibility
+export const protect = authMiddleware;

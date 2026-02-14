@@ -17,3 +17,6 @@ export const authorizeRoles = (...roles) => {
         next();
     };
 };
+
+// Export as 'restrictTo' for compatibility
+export const restrictTo = authorizeRoles;

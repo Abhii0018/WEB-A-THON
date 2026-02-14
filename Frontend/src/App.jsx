@@ -7,6 +7,11 @@ import CategoryDetailPage from './pages/CategoryDetailPage';
 import ContactPage from './pages/ContactPage';
 import HowItWorksPage from './pages/HowItWorksPage';
 import BookingPage from './pages/BookingPage';
+import UserDashboard from './pages/UserDashboard';
+import EmployeeDashboard from './pages/EmployeeDashboard';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminContactsPage from './pages/AdminContactsPage';
+import ProfilePage from './pages/ProfilePage';
 import './index.css';
 
 function App() {
@@ -21,6 +26,14 @@ function App() {
         <Route path="/booking/:categoryId/:serviceId" element={<BookingPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/how-it-works" element={<HowItWorksPage />} />
+        {/* Role-based Dashboards */}
+        <Route path="/dashboard/user" element={<UserDashboard />} />
+        <Route path="/dashboard/employee" element={<EmployeeDashboard />} />
+        <Route path="/dashboard/admin" element={<AdminDashboard />} />
+        {/* Admin Pages */}
+        <Route path="/admin/contacts" element={<AdminContactsPage />} />
+        {/* Profile */}
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </BrowserRouter>
   );

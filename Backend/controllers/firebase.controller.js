@@ -8,13 +8,24 @@ import { verifyFirebaseToken } from '../middleware/firebase.middleware.js';
  */
 export const firebaseSignup = async (req, res) => {
   try {
-    const { name, email, firebaseUid } = req.body;
+    const { name, email, firebaseUid, role } = req.body;
 
     // Validate required fields
     if (!name || !email || !firebaseUid) {
       return res.status(400).json({
         success: false,
         message: 'Name, email, and firebaseUid are required'
+      });
+    }
+
+    // Validate role if provided
+    const validRoles = ['admin', 'user', 'employee'];
+    const userRole = role ? role.toLowerCase() : 'user';
+    
+    if (!validRoles.includes(userRole)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid role. Must be admin, user, or employee'
       });
     }
 
@@ -36,7 +47,7 @@ export const firebaseSignup = async (req, res) => {
       email,
       firebaseUid,
       authProvider: 'firebase',
-      role: 'user'
+      role: userRole
     });
 
     // Return user data (without password)
@@ -100,7 +111,8 @@ export const firebaseLogin = async (req, res) => {
       firebaseUid: user.firebaseUid,
       role: user.role,
       authProvider: user.authProvider,
-      photoURL: user.photoURL
+      photoURL: user.photoURL,
+      createdAt: user.createdAt
     };
 
     res.status(200).json({
@@ -159,7 +171,8 @@ export const firebaseGoogleAuth = async (req, res) => {
         firebaseUid: user.firebaseUid,
         role: user.role,
         authProvider: user.authProvider,
-        photoURL: user.photoURL
+        photoURL: user.photoURL,
+        createdAt: user.createdAt
       };
 
       return res.status(200).json({
@@ -189,7 +202,8 @@ export const firebaseGoogleAuth = async (req, res) => {
       firebaseUid: user.firebaseUid,
       role: user.role,
       authProvider: user.authProvider,
-      photoURL: user.photoURL
+      photoURL: user.photoURL,
+      createdAt: user.createdAt
     };
 
     res.status(201).json({

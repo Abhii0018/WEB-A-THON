@@ -38,11 +38,13 @@ const Auth = () => {
     const lastName = formData.get('lastName');
     const email = formData.get('email');
     const password = formData.get('password');
+    const role = formData.get('role') || 'user';
 
     const result = await signUpWithEmail(
       email,
       password,
-      `${firstName} ${lastName}`
+      `${firstName} ${lastName}`,
+      role
     );
 
     if (result.success) {
@@ -71,7 +73,13 @@ const Auth = () => {
     const result = await signInWithEmail(email, password);
 
     if (result.success) {
-      navigate(redirectUrl);
+      // Redirect based on user role
+      const userRole = result.user.role || 'User';
+      if (redirectUrl && redirectUrl !== '/') {
+        navigate(redirectUrl);
+      } else {
+        navigate(`/dashboard/${userRole.toLowerCase()}`);
+      }
     } else {
       setError(result.error);
     }
@@ -87,7 +95,13 @@ const Auth = () => {
     const result = await googleSignIn();
 
     if (result.success) {
-      navigate(redirectUrl);
+      // Redirect based on user role
+      const userRole = result.user.role || 'User';
+      if (redirectUrl && redirectUrl !== '/') {
+        navigate(redirectUrl);
+      } else {
+        navigate(`/dashboard/${userRole.toLowerCase()}`);
+      }
     } else {
       setError(result.error);
     }
@@ -157,6 +171,17 @@ const Auth = () => {
                 <span className="auth-eye" onClick={() => setShowSignupPassword(!showSignupPassword)}>
                   👁️
                 </span>
+              </div>
+            </div>
+
+            <div className="auth-input" style={{ marginBottom: '16px' }}>
+              <div className="auth-input inline">
+                <span>👤</span>
+                <select name="role" required style={{ width: '100%', border: 'none', outline: 'none', background: 'transparent', fontSize: '14px', color: '#333' }}>
+                  <option value="user">User</option>
+                  <option value="employee">Employee</option>
+                  <option value="admin">Admin</option>
+                </select>
               </div>
             </div>
 

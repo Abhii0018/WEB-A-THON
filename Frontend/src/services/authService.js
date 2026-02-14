@@ -13,7 +13,7 @@ import api from '../config/api';
  * Then send ID token to backend to create user in MongoDB
  * User must login manually after signup
  */
-export const signUpWithEmail = async (email, password, name) => {
+export const signUpWithEmail = async (email, password, name, role = 'user') => {
   try {
     // Create user in Firebase
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -29,7 +29,8 @@ export const signUpWithEmail = async (email, password, name) => {
     const response = await api.post('/auth/firebase-signup', {
       name: name,
       email: email,
-      firebaseUid: user.uid
+      firebaseUid: user.uid,
+      role: role
     }, {
       headers: {
         'Authorization': `Bearer ${tempToken}`

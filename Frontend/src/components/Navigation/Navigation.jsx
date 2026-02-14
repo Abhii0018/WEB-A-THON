@@ -68,6 +68,14 @@ const Navbar = () => {
     navigate('/');
   };
 
+  const handleLogoClick = () => {
+    if (user && user.role) {
+      navigate(`/dashboard/${user.role.toLowerCase()}`);
+    } else {
+      navigate('/');
+    }
+  };
+
   return (
     <>
       <style>
@@ -160,7 +168,7 @@ const Navbar = () => {
           <div className="flex justify-between items-center">
             {/* Logo */}
             <div 
-              onClick={() => navigate('/')}
+              onClick={handleLogoClick}
               className="flex items-center space-x-3 group cursor-pointer"
             >
               <div className="logo-gradient w-9 h-9 rounded-xl flex items-center justify-center transform transition-all duration-500 group-hover:rotate-[360deg] group-hover:scale-110">
@@ -219,7 +227,13 @@ const Navbar = () => {
                           <p className="text-xs text-gray-500 mt-1">{user.email}</p>
                         </div>
                         <div className="py-2">
-                          <div className="profile-menu-item">
+                          <div 
+                            className="profile-menu-item"
+                            onClick={() => {
+                              setShowProfileMenu(false);
+                              navigate('/profile');
+                            }}
+                          >
                             <User className="w-4 h-4" />
                             <span>Profile</span>
                           </div>
@@ -300,6 +314,16 @@ const Navbar = () => {
                     <p className="text-sm font-semibold text-gray-900">{user.name}</p>
                     <p className="text-xs text-gray-500 mt-1">{user.email}</p>
                   </div>
+                  <button
+                    onClick={() => {
+                      navigate('/profile');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95 transform mt-2 flex items-center justify-center gap-2"
+                  >
+                    <User className="w-4 h-4" />
+                    My Profile
+                  </button>
                   <button
                     onClick={handleLogout}
                     className="w-full bg-red-50 hover:bg-red-100 text-red-600 px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95 transform mt-2 flex items-center justify-center gap-2"
